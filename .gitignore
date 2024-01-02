@@ -1,10 +1,12 @@
 __pycache__/
 .venv/
 
-.idea/
-
 dist/
 build/
 src/trello2youtrack.egg-info/
 
+.idea/
+
 .DS_Store
+
+credentials.sh
