@@ -10,3 +10,5 @@ src/trello2youtrack.egg-info/
 .DS_Store
 
 credentials.sh
+assets/*.json
+scripts/playground.py
