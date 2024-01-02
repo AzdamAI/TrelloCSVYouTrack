@@ -1,0 +1,10 @@
+__pycache__/
+.venv/
+
+.idea/
+
+dist/
+build/
+src/trello2youtrack.egg-info/
+
+.DS_Store
