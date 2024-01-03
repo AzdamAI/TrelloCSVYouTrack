@@ -2,7 +2,7 @@ import requests
 
 
 class YouTrack:
-    def __init__(self, api_base_url: str, perm_token: str):
+    def __init__(self, api_base_url: str = None, perm_token: str = None):
         """
         Adapter class for YouTrack.
 
@@ -13,6 +13,8 @@ class YouTrack:
         """
         self.api_base_url = api_base_url
         self.perm_token = perm_token
+        if not self.api_base_url or not self.perm_token:
+            raise ValueError('Both base URL and permanent token are required.')
 
         self.session = self.init_session()
 
