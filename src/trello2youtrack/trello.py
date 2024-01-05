@@ -1,9 +1,11 @@
+from typing import List, Dict, Any
+
 import requests
 
 
 class Trello:
     def __init__(self, api_base_url: str = 'https://api.trello.com/1',
-                 api_key: str = None, api_token=None) -> None:
+                 api_key: str = None, api_token=None):
         """
         Adapter class for Trello.
         Follow Trello's REST API documentation to obtain an API key and token:
@@ -27,5 +29,27 @@ class Trello:
                                 f'{self.api_base_url}{url}',
                                 **kwargs)
 
-    def get_card_powerups_data(self, card_id: str) -> requests.Response:
-        return self.request('GET', f'/cards/{card_id}/pluginData')
+    def get_board_cards(self, board_id: str) -> List[Dict[str, Any]]:
+        response = self.request('GET',
+                                f'/boards/{board_id}/cards')
+        return response.json()
+
+    def get_card_powerups(self, card_id: str) -> List[Dict[str, Any]]:
+        response = self.request('GET',
+                                f'/cards/{card_id}/pluginData')
+        return response.json()
+
+    def get_board_cards_powerups(self, board_id: str) -> List[Dict[str, Any]]:
+        cards = self.get_board_cards(board_id)
+
+        session = requests.Session()
+        query_params = {'key': self.api_key, 'token': self.api_token}
+        powerups = []
+        for card in cards:
+            powerup = session.get(url=f'/cards/{card["id"]}/pluginData',
+                                  params=query_params,
+                                  timeout=1)
+            powerups.append(powerup)
+            if len(powerups) % 10 == 0:
+                print('Progress:', len(powerups))
+        return powerups
