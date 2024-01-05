@@ -1,4 +1,6 @@
-from typing import List, Dict, Any
+import csv
+import os
+from typing import List, Dict, Union, Any
 
 import requests
 
@@ -53,20 +55,37 @@ class Trello:
 
         :param board_id: ID of the board
         :param timeout: Timeout in seconds to wait between API calls
-        :return: List of Power-Ups data
+        :return: Mapping of card IDs (Short Links) to card name and Power-Ups
         """
         cards = self.get_board_cards(board_id)
 
         session = requests.Session()
         query_params = {'key': self.api_key, 'token': self.api_token}
-        powerups = []
+        card_powerups = []
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
                 params=query_params,
                 timeout=timeout,
             )
-            powerups.append(response.json())
-            if len(powerups) % 10 == 0:
-                print('Progress:', len(powerups))
-        return powerups
+            card_powerups.append({'id': card['shortLink'],
+                                  'name': card['name'],
+                                  'powerups': response.json()})
+            if len(card_powerups) % 10 == 0:
+                print('Progress:', len(card_powerups))
+        return card_powerups
+
+    def export_board_cards_summary_story_points(
+            self,
+            board_id: str,
+            csv_path: Union[str, bytes, os.PathLike],
+            csv_header: List[str] = None
+    ) -> None:
+        card_powerups = self.get_board_cards_powerups(board_id)
+
+        csv_header = csv_header or ['Summary', 'Story Points']
+        with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=csv_header)
+            writer.writeheader()
+            for card in card_powerups:
+                writer.writerow([card['name'], card['powerups']])
