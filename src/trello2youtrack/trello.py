@@ -1,8 +1,11 @@
 import csv
+import json
 import os
 from typing import List, Dict, Union, Any
 
 import requests
+
+AGILE_TOOLS_PLUGIN_ID = '59d4ef8cfea15a55b0086614'
 
 
 class Trello:
@@ -75,17 +78,38 @@ class Trello:
                 print('Progress:', len(card_powerups))
         return card_powerups
 
-    def export_board_cards_summary_story_points(
+    def export_board_story_points(
             self,
-            board_id: str,
+            card_powerups: List[Dict[str, Any]],
             csv_path: Union[str, bytes, os.PathLike],
             csv_header: List[str] = None
     ) -> None:
-        card_powerups = self.get_board_cards_powerups(board_id)
+        """
+        Exports the cards' Story Points on the given board in a CSV file.
+
+        :param card_powerups: List of Card Power-Ups data
+        :param csv_path: Path to the output CSV file
+        :param csv_header: CSV header
+        :return:
+        """
 
         csv_header = csv_header or ['Summary', 'Story Points']
         with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=csv_header)
-            writer.writeheader()
+            writer = csv.writer(file)
+            # Write the header
+            writer.writerow(csv_header)
+            # Write the rows beyond the header
             for card in card_powerups:
-                writer.writerow([card['name'], card['powerups']])
+                story_points = self.parse_powerup_points(card['powerups'])
+                writer.writerow([card['name'], story_points])
+
+    @staticmethod
+    def parse_powerup_points(powerups: List[Dict[str, Any]]) -> str:
+        try:
+            for powerup in powerups:
+                if powerup['idPlugin'] == AGILE_TOOLS_PLUGIN_ID:
+                    parsed_points = json.loads(powerup['value'])
+                    return str(parsed_points['points'])
+        except Exception:
+            pass
+        return ''
