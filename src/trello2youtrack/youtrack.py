@@ -1,3 +1,5 @@
+from typing import Dict
+
 import requests
 
 
@@ -27,3 +29,17 @@ class YouTrack:
             'Accept': 'application/json',
         })
         return session
+
+    def get_issue(self, issue_id: str) -> Dict:
+        query_params = {
+            'fields': 'id,summary,'
+                      'customFields(id,name,'
+                      'value(avatarUrl,buildLink,color(id),'
+                      'fullName,id,isResolved,localizedName,'
+                      'login,minutes,name,presentation,text))'
+        }
+        response = self.session.get(
+            url=f'{self.api_base_url}/api/issues/{issue_id}',
+            params=query_params
+        )
+        return response.json()
