@@ -30,26 +30,43 @@ class Trello:
                                 **kwargs)
 
     def get_board_cards(self, board_id: str) -> List[Dict[str, Any]]:
-        response = self.request('GET',
-                                f'/boards/{board_id}/cards')
+        response = self.request(method='GET',
+                                url=f'/boards/{board_id}/cards')
+        return response.json()
+
+    def get_card(self, card_id: str) -> Dict[str, Any]:
+        response = self.request(method='GET',
+                                url=f'/cards/{card_id}')
         return response.json()
 
     def get_card_powerups(self, card_id: str) -> List[Dict[str, Any]]:
-        response = self.request('GET',
-                                f'/cards/{card_id}/pluginData')
+        response = self.request(method='GET',
+                                url=f'/cards/{card_id}/pluginData')
         return response.json()
 
-    def get_board_cards_powerups(self, board_id: str) -> List[Dict[str, Any]]:
+    def get_board_cards_powerups(self,
+                                 board_id: str,
+                                 timeout: int = 1) -> List[Dict[str, Any]]:
+        """
+        Returns a list of Power-Ups (Plugins) data for all cards
+        on the given board.
+
+        :param board_id: ID of the board
+        :param timeout: Timeout in seconds to wait between API calls
+        :return: List of Power-Ups data
+        """
         cards = self.get_board_cards(board_id)
 
         session = requests.Session()
         query_params = {'key': self.api_key, 'token': self.api_token}
         powerups = []
         for card in cards:
-            powerup = session.get(url=f'/cards/{card["id"]}/pluginData',
-                                  params=query_params,
-                                  timeout=1)
-            powerups.append(powerup)
+            response = session.get(
+                url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
+                params=query_params,
+                timeout=timeout,
+            )
+            powerups.append(response.json())
             if len(powerups) % 10 == 0:
                 print('Progress:', len(powerups))
         return powerups
