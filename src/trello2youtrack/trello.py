@@ -26,3 +26,6 @@ class Trello:
         return requests.request(method,
                                 f'{self.api_base_url}{url}',
                                 **kwargs)
+
+    def get_card_powerups_data(self, card_id: str) -> requests.Response:
+        return self.request('GET', f'/cards/{card_id}/pluginData')
