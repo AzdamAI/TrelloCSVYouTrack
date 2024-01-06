@@ -37,16 +37,19 @@ class Trello:
     def get_board_cards(self, board_id: str) -> List[Dict[str, Any]]:
         response = self.request(method='GET',
                                 url=f'/boards/{board_id}/cards')
+        response.raise_for_status()
         return response.json()
 
     def get_card(self, card_id: str) -> Dict[str, Any]:
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}')
+        response.raise_for_status()
         return response.json()
 
     def get_card_powerups(self, card_id: str) -> List[Dict[str, Any]]:
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}/pluginData')
+        response.raise_for_status()
         return response.json()
 
     def get_board_cards_powerups(self,
@@ -71,6 +74,7 @@ class Trello:
                 params=query_params,
                 timeout=timeout,
             )
+            response.raise_for_status()
             card_powerups.append({'id': card['shortLink'],
                                   'name': card['name'],
                                   'powerups': response.json()})

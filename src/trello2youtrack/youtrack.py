@@ -42,4 +42,5 @@ class YouTrack:
             url=f'{self.api_base_url}/api/issues/{issue_id}',
             params=query_params
         )
+        response.raise_for_status()
         return response.json()
