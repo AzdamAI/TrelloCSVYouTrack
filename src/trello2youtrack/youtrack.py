@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List, Dict, Any
 
 import requests
 
@@ -40,6 +40,20 @@ class YouTrack:
         response = self.session.get(
             url=f'{self.api_base_url}/api/issues/{issue_id}',
             params={'fields': ISSUE_FIELDS}
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def get_all_issues(self, count: int = 1_000_000) -> List[Dict[str, Any]]:
+        """
+        Returns a list of top `count` Issues.
+
+        :param count: Number of Issues to be retrieved
+        :return: List of Issues
+        """
+        response = self.session.get(
+            url=f'{self.api_base_url}/api/issues',
+            params={'fields': ISSUE_FIELDS, '$top': count}
         )
         response.raise_for_status()
         return response.json()
