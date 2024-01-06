@@ -1,4 +1,12 @@
+from typing import Dict
+
 import requests
+
+ISSUE_FIELDS = \
+    'id,summary,' \
+    'customFields(id,name,' \
+    'value(avatarUrl,buildLink,color(id),fullName,id,isResolved,' \
+    'localizedName,login,minutes,name,presentation,text))'
 
 
 class YouTrack:
@@ -27,3 +35,25 @@ class YouTrack:
             'Accept': 'application/json',
         })
         return session
+
+    def get_issue(self, issue_id: str) -> Dict:
+        response = self.session.get(
+            url=f'{self.api_base_url}/api/issues/{issue_id}',
+            params={'fields': ISSUE_FIELDS}
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def update_issue_story_points(self,
+                                  issue_id: str,
+                                  story_points: int) -> Dict:
+        response = self.session.post(
+            url=f'{self.api_base_url}/api/issues/{issue_id}',
+            params={'fields': ISSUE_FIELDS},
+            json={'customFields': [{'$type': 'SimpleIssueCustomField',
+                                    'id': '192-57',
+                                    'name': 'Story points',
+                                    'value': story_points}]}
+        )
+        response.raise_for_status()
+        return response.json()
