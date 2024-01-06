@@ -66,12 +66,11 @@ class Trello:
         cards = self.get_board_cards(board_id)
 
         session = requests.Session()
-        query_params = {'key': self.api_key, 'token': self.api_token}
         card_powerups = []
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
-                params=query_params,
+                params={'key': self.api_key, 'token': self.api_token},
                 timeout=timeout,
             )
             response.raise_for_status()
