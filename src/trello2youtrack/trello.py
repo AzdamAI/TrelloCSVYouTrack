@@ -5,6 +5,8 @@ from typing import List, Dict, Union, Any
 
 import requests
 
+# Free Story Points Power-Up (plugin):
+# https://trello.com/power-ups/59d4ef8cfea15a55b0086614
 AGILE_TOOLS_PLUGIN_ID = '59d4ef8cfea15a55b0086614'
 
 
