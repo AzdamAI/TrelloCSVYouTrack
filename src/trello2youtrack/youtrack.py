@@ -36,15 +36,19 @@ class YouTrack:
         })
         return session
 
-    def get_issue(self, issue_id: str) -> Dict:
+    def get_issue(self,
+                  issue_id: str,
+                  fields: str = ISSUE_FIELDS) -> Dict[str, Any]:
         response = self.session.get(
             url=f'{self.api_base_url}/api/issues/{issue_id}',
-            params={'fields': ISSUE_FIELDS}
+            params={'fields': fields}
         )
         response.raise_for_status()
         return response.json()
 
-    def get_all_issues(self, count: int = 1_000_000) -> List[Dict[str, Any]]:
+    def get_all_issues(self,
+                       count: int = 1_000_000,
+                       fields: str = ISSUE_FIELDS) -> List[Dict[str, Any]]:
         """
         Returns a list of top `count` Issues.
 
@@ -53,19 +57,23 @@ class YouTrack:
         """
         response = self.session.get(
             url=f'{self.api_base_url}/api/issues',
-            params={'fields': ISSUE_FIELDS, '$top': count}
+            params={'fields': fields, '$top': count}
         )
         response.raise_for_status()
         return response.json()
 
-    def update_issue_story_points(self,
-                                  issue_id: str,
-                                  story_points: int) -> Dict:
+    def update_issue_story_points(
+            self,
+            issue_id: str,
+            story_points: int,
+            story_points_field_id: str = '192-57',
+            fields: str = ISSUE_FIELDS
+    ) -> Dict[str, Any]:
         response = self.session.post(
             url=f'{self.api_base_url}/api/issues/{issue_id}',
-            params={'fields': ISSUE_FIELDS},
+            params={'fields': fields},
             json={'customFields': [{'$type': 'SimpleIssueCustomField',
-                                    'id': '192-57',
+                                    'id': story_points_field_id,
                                     'name': 'Story points',
                                     'value': story_points}]}
         )
