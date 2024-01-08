@@ -5,7 +5,15 @@ from typing import List, Dict, Union, Any
 
 import requests
 
-# Free Story Points Power-Up (plugin):
+# For a complete list of Action Types refer to:
+# https://developer.atlassian.com/cloud/trello/guides/rest-api/action-types
+ACTION_TYPES = {
+    'create_card': 'createCard',
+    'update_card': 'updateCard',
+    'comment_card': 'commentCard',
+}
+
+# Story Points Power-Up (plugin) free:
 # https://trello.com/power-ups/59d4ef8cfea15a55b0086614
 AGILE_TOOLS_PLUGIN_ID = '59d4ef8cfea15a55b0086614'
 
@@ -45,6 +53,19 @@ class Trello:
     def get_card(self, card_id: str) -> Dict[str, Any]:
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def get_card_actions(self,
+                         card_id: str,
+                         action_types: List[str] = None,
+                         limit: int = 1000) -> List[Dict[str, Any]]:
+        filter = ','.join(action_types or ACTION_TYPES.values())
+        print(filter)
+        response = self.request(method='GET',
+                                url=f'/cards/{card_id}/actions',
+                                params={'filter': filter,
+                                        'limit': limit})
         response.raise_for_status()
         return response.json()
 
