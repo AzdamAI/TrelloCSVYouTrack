@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 import requests
 
 ISSUE_FIELDS = \
-    'id,summary,' \
+    'id,summary,created,updated,' \
     'customFields(id,name,' \
     'value(avatarUrl,buildLink,color(id),fullName,id,isResolved,' \
     'localizedName,login,minutes,name,presentation,text))'
@@ -38,7 +38,8 @@ class YouTrack:
 
     def get_issue(self,
                   issue_id: str,
-                  fields: str = ISSUE_FIELDS) -> Dict[str, Any]:
+                  fields: str = None) -> Dict[str, Any]:
+        fields = fields or ISSUE_FIELDS
         response = self.session.get(
             url=f'{self.api_base_url}/api/issues/{issue_id}',
             params={'fields': fields}
@@ -48,13 +49,14 @@ class YouTrack:
 
     def get_all_issues(self,
                        count: int = 1_000_000,
-                       fields: str = ISSUE_FIELDS) -> List[Dict[str, Any]]:
+                       fields: str = None) -> List[Dict[str, Any]]:
         """
         Returns a list of top `count` Issues.
 
         :param count: Number of Issues to be retrieved
         :return: List of Issues
         """
+        fields = fields or ISSUE_FIELDS
         response = self.session.get(
             url=f'{self.api_base_url}/api/issues',
             params={'fields': fields, '$top': count}
@@ -62,13 +64,12 @@ class YouTrack:
         response.raise_for_status()
         return response.json()
 
-    def update_issue_story_points(
-            self,
-            issue_id: str,
-            story_points: int,
-            story_points_field_id: str = '192-57',
-            fields: str = ISSUE_FIELDS
-    ) -> Dict[str, Any]:
+    def update_issue_story_points(self,
+                                  issue_id: str,
+                                  story_points: int,
+                                  story_points_field_id: str = '192-57',
+                                  fields: str = None) -> Dict[str, Any]:
+        fields = fields or ISSUE_FIELDS
         response = self.session.post(
             url=f'{self.api_base_url}/api/issues/{issue_id}',
             params={'fields': fields},
