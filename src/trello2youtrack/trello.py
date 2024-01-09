@@ -62,13 +62,23 @@ class Trello:
                          action_types: List[str] = None,
                          limit: int = 1000) -> List[Dict[str, Any]]:
         filter = ','.join(action_types or ACTION_TYPES.values())
-        print(filter)
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}/actions',
                                 params={'filter': filter,
                                         'limit': limit})
         response.raise_for_status()
         return response.json()
+
+    def get_card_creator_username(self, card: Dict[str, Any]) -> str:
+        create_card_actions = self.get_card_actions(
+            card_id=card['shortLink'],
+            action_types=[ACTION_TYPES['create_card']],
+        )
+        try:
+            return create_card_actions[0]['memberCreator']['username']
+        except Exception:
+            logging.error(f'Failed to get the card creator username: {card}')
+        return ''
 
     def get_card_powerups(self,
                           card_id: str) -> List[Dict[str, Any]]:
