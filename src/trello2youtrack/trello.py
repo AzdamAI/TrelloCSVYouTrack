@@ -78,17 +78,6 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def parse_card_creator_username(self, card: Dict[str, Any]) -> str:
-        create_card_actions = self.get_card_actions(
-            card_id=card['shortLink'],
-            action_types=[ACTION_TYPES['create_card']],
-        )
-        try:
-            return create_card_actions[0]['memberCreator']['username']
-        except Exception:
-            logging.error(f'Failed to get the card creator username: {card}')
-        return ''
-
     def get_card_powerups(self,
                           card_id: str) -> List[Dict[str, Any]]:
         response = self.request(method='GET',
@@ -128,6 +117,20 @@ class Trello:
             return card['idShort']
         except Exception:
             logging.error(f'Could not parse Card ID: {card}')
+        return ''
+
+    @staticmethod
+    def parse_card_creator_username(card_actions: List[Dict[str, Any]]) -> str:
+        try:
+            for card_action in card_actions:
+                if card_action['actionType'] == ACTION_TYPES['create_card']:
+                    return card_action['memberCreator']['username']
+            else:
+                raise KeyError()
+        except Exception:
+            logging.error(
+                f'Failed to parse the card creator username: {card_actions}'
+            )
         return ''
 
     @staticmethod
