@@ -14,6 +14,8 @@ ACTION_TYPES = {
     'comment_card': 'commentCard',
 }
 
+MEMBER_FIELDS = ['all']
+
 # Story Points Power-Up (plugin) free:
 # https://trello.com/power-ups/59d4ef8cfea15a55b0086614
 AGILE_TOOLS_PLUGIN_ID = '59d4ef8cfea15a55b0086614'
@@ -57,15 +59,6 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_card_members(self,
-                         card_id: str,
-                         fields: str = 'all') -> List[Dict[str, Any]]:
-        response = self.request(method='GET',
-                                url=f'/cards/{card_id}/members',
-                                params={'fields': fields})
-        response.raise_for_status()
-        return response.json()
-
     def get_card_actions(self,
                          card_id: str,
                          action_types: List[str] = None,
@@ -99,6 +92,16 @@ class Trello:
             if len(actions_mapping) % 10 == 0:
                 print(f'Actions: {len(actions_mapping)}')
         return actions_mapping
+
+    def get_card_members(self,
+                         card_id: str,
+                         fields: List[str] = None) -> List[Dict[str, Any]]:
+        member_fields = ','.join(fields or MEMBER_FIELDS)
+        response = self.request(method='GET',
+                                url=f'/cards/{card_id}/members',
+                                params={'fields': member_fields})
+        response.raise_for_status()
+        return response.json()
 
     def get_card_powerups(self,
                           card_id: str) -> List[Dict[str, Any]]:
@@ -152,9 +155,7 @@ class Trello:
             else:
                 raise KeyError()
         except Exception:
-            logging.error(
-                f'Failed to parse the card creator username: {card_actions}'
-            )
+            logging.error(f'Failed to parse the card creator: {card_actions}')
         return '', ''
 
     @staticmethod
