@@ -209,10 +209,12 @@ class Trello:
 
     @staticmethod
     def parse_card_assignee_username(members: List[Dict[str, Any]]) -> str:
+        if not members:
+            return ''
         try:
             return members[0]['username']
         except Exception:
-            logging.error(f'Could not parse Card member: {members}')
+            logging.error(f'Could not parse Card assignee: {members}')
         return ''
 
     @staticmethod
