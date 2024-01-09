@@ -91,7 +91,7 @@ class Trello:
             actions_mapping[card['shortLink']] = response.json()
             if len(actions_mapping) % 10 == 0:
                 print(f'Actions: {len(actions_mapping)}')
-        print('Finished retrieving cards actions\n')
+        print('Finished retrieving Cards Actions\n')
         return actions_mapping
 
     def get_card_members(
@@ -125,7 +125,7 @@ class Trello:
             members_mapping[card['shortLink']] = response.json()
             if len(members_mapping) % 10 == 0:
                 print(f'Members: {len(members_mapping)}')
-        print('Finished retrieving cards members\n')
+        print('Finished retrieving Cards Members\n')
         return members_mapping
 
     def get_card_powerups(self,
@@ -158,7 +158,7 @@ class Trello:
             powerups_mapping[card['shortLink']] = response.json()
             if len(powerups_mapping) % 10 == 0:
                 print(f'Power-Ups: {len(powerups_mapping)}')
-        print('Finished retrieving cards Power-Ups\n')
+        print('Finished retrieving Cards Power-Ups\n')
         return powerups_mapping
 
     @staticmethod
@@ -166,7 +166,7 @@ class Trello:
         try:
             return card['idShort']
         except Exception:
-            logging.error(f'Could not parse Card ID: {card}')
+            logging.error(f'Failed to parse Card ID: {card}')
         return ''
 
     @staticmethod
@@ -180,7 +180,7 @@ class Trello:
             else:
                 raise KeyError()
         except Exception:
-            logging.error(f'Failed to parse the card creator: {actions}')
+            logging.error(f'Failed to parse the Card creator: {actions}')
         return '', ''
 
     @staticmethod
@@ -188,7 +188,7 @@ class Trello:
         try:
             return card['name']
         except Exception:
-            logging.error(f'Could not parse Card summary: {card}')
+            logging.error(f'Failed to parse Card summary: {card}')
         return ''
 
     @staticmethod
@@ -196,7 +196,7 @@ class Trello:
         try:
             return card['desc']
         except Exception:
-            logging.error(f'Could not parse Card description: {card}')
+            logging.error(f'Failed to parse Card description: {card}')
         return ''
 
     @staticmethod
@@ -204,7 +204,7 @@ class Trello:
         try:
             return card['due']
         except Exception:
-            logging.error(f'Could not parse Card due date: {card}')
+            logging.error(f'Failed to parse Card due date: {card}')
         return ''
 
     @staticmethod
@@ -214,7 +214,7 @@ class Trello:
         try:
             return members[0]['username']
         except Exception:
-            logging.error(f'Could not parse Card assignee: {members}')
+            logging.error(f'Failed to parse Card assignee: {members}')
         return ''
 
     @staticmethod
@@ -225,30 +225,26 @@ class Trello:
                     parsed_points = json.loads(powerup['value'])
                     return str(parsed_points['points'])
         except Exception:
-            logging.error(f'Could not parse Story Points: {powerups}')
+            logging.error(f'Failed to parse Story Points: {powerups}')
         return ''
 
-    def export_board_csv(
-            self,
-            card_powerups: List[Dict[str, Any]],
-            csv_path: Union[str, bytes, os.PathLike],
-            csv_header: List[str] = None
-    ) -> None:
+    def export_board_csv(self,
+                         board: List[Dict[str, Any]],
+                         csv_path: Union[str, bytes, os.PathLike],
+                         csv_header: List[str]) -> None:
         """
-        Exports the cards' Story Points on the given board in a CSV file.
+        Writes the given board to a CSV file at the given path.
 
-        :param card_powerups: List of Card Power-Ups data
+        :param board: List of Board Cards each as a row
         :param csv_path: Path to the output CSV file
         :param csv_header: CSV header
         :return:
         """
-
-        csv_header = csv_header or ['Summary', 'Story Points']
         with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
+            writer = csv.DictWriter(file, fieldnames=csv_header)
             # Write the header
-            writer.writerow(csv_header)
+            writer.writeheader()
             # Write the rows beyond the header
-            for cp in card_powerups:
-                story_points = self.parse_story_points(cp)
-                writer.writerow([cp['name'], story_points])
+            for row in board:
+                writer.writerow(row)
+        print(f'Successfully exported {len(board)} rows!')
