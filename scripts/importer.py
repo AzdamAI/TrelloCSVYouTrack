@@ -29,23 +29,24 @@ def main():
     board = []
     for card in cards:
         row = {}
-        row['id'] = trello.parse_card_id(card)
+        row['ID'] = trello.parse_card_id(card)
         author, created = trello.parse_card_creator_username_and_date(
             actions_mapping[card['shortLink']]
         )
-        row['author'] = author
-        row['created'] = created
-        row['summary'] = trello.parse_card_summary(card)
-        row['description'] = trello.parse_card_description(card)
-        row['due_date'] = trello.parse_card_due(card)
-        row['assignee'] = trello.parse_card_assignee_username(
+        row['Author'] = author
+        row['Created'] = created
+        row['Summary'] = trello.parse_card_summary(card)
+        row['Description'] = trello.parse_card_description(card)
+        row['Due Date'] = trello.parse_card_due(card)
+        row['Assignee (user)'] = trello.parse_card_assignee_username(
             members_mapping[card['shortLink']]
         )
-        row['state'] = RESOLVED_STATE
-        row['story_points'] = trello.parse_story_points(
+        row['State (state)'] = RESOLVED_STATE
+        row['Story Points (integer)'] = trello.parse_story_points(
             powerups_mapping[card['shortLink']]
         )
         board.append(row)
+    trello.export_board_csv(board, 'trello-board.csv', CSV_HEADER)
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
                         perm_token=YOUTRACK_PERM_TOKEN)
