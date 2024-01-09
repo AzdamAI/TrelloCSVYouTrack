@@ -2,6 +2,7 @@ import csv
 import json
 import logging
 import os
+import time
 from typing import List, Dict, Union, Any
 
 import requests
@@ -83,23 +84,21 @@ class Trello:
             cards: List[Dict[str, Any]],
             action_types: List[str] = None,
             action_limit: int = 1000,
-            timeout: int = 1
     ) -> Dict[str, List[Dict[str, Any]]]:
-        action_filter = ','.join(action_types or ACTION_TYPES.values())
-
         session = requests.Session()
+        session.params = {'key': self.api_key, 'token': self.api_token}
+
+        action_filter = ','.join(action_types or ACTION_TYPES.values())
         actions_mapping = {}
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/actions',
-                params={'key': self.api_key, 'token': self.api_token,
-                        'filter': action_filter, 'limit': action_limit},
-                timeout=timeout,
+                params={'filter': action_filter, 'limit': action_limit},
             )
             response.raise_for_status()
             actions_mapping[card['shortLink']] = response.json()
             if len(actions_mapping) % 10 == 0:
-                print(f'Progress: {len(actions_mapping)}')
+                print(f'Actions: {len(actions_mapping)}')
         return actions_mapping
 
     def get_card_powerups(self,
@@ -112,7 +111,6 @@ class Trello:
     def get_cards_powerups_bulk(
             self,
             cards: List[Dict[str, Any]],
-            timeout: int = 1
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Returns a mapping of Power-Ups (Plugins) data for the given cards.
@@ -122,17 +120,17 @@ class Trello:
         :return: Mapping of card Short Links to the Power-Ups (Plugins)
         """
         session = requests.Session()
+        session.params = {'key': self.api_key, 'token': self.api_token}
+
         powerups_mapping = {}
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
-                params={'key': self.api_key, 'token': self.api_token},
-                timeout=timeout,
             )
             response.raise_for_status()
             powerups_mapping[card['shortLink']] = response.json()
             if len(powerups_mapping) % 10 == 0:
-                print(f'Progress: {len(powerups_mapping)}')
+                print(f'Power-Ups: {len(powerups_mapping)}')
         return powerups_mapping
 
     @staticmethod
