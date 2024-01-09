@@ -2,8 +2,7 @@ import csv
 import json
 import logging
 import os
-import time
-from typing import List, Dict, Union, Any
+from typing import Tuple, List, Dict, Union, Any
 
 import requests
 
@@ -142,18 +141,21 @@ class Trello:
         return ''
 
     @staticmethod
-    def parse_card_creator_username(card_actions: List[Dict[str, Any]]) -> str:
+    def parse_card_creator_username_and_date(
+            card_actions: List[Dict[str, Any]]
+    ) -> Tuple[str, str]:
         try:
             for card_action in card_actions:
-                if card_action['actionType'] == ACTION_TYPES['create_card']:
-                    return card_action['memberCreator']['username']
+                if card_action['type'] == ACTION_TYPES['create_card']:
+                    return (card_action['memberCreator']['username'],
+                            card_action['date'])
             else:
                 raise KeyError()
         except Exception:
             logging.error(
                 f'Failed to parse the card creator username: {card_actions}'
             )
-        return ''
+        return '', ''
 
     @staticmethod
     def parse_story_points(powerups: List[Dict[str, Any]]) -> str:

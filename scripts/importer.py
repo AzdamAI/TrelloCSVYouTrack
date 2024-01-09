@@ -20,14 +20,18 @@ CSV_HEADER = [
 def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
     cards = trello.get_board_cards(TRELLO_BOARD_ID)
+    actions_mapping = trello.get_cards_actions_bulk(cards)
     powerups_mapping = trello.get_cards_powerups_bulk(cards)
 
     board = []
     for card in cards:
         row = {}
         row['id'] = trello.parse_card_id(card)
-        row['author'] = ''
-        row['created'] = ''
+        author, created = trello.parse_card_creator_username_and_date(
+            actions_mapping[card['shortLink']]
+        )
+        row['author'] = author
+        row['created'] = created
         row['summary'] = ''
         row['description'] = ''
         row['due_date'] = ''
