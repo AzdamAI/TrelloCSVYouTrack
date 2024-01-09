@@ -87,18 +87,18 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_cards_powerups(self,
-                           cards: List[Dict[str, Any]],
-                           timeout: int = 1) -> List[Dict[str, Any]]:
+    def get_cards_powerups_bulk(self,
+                                cards: List[Dict[str, Any]],
+                                timeout: int = 1) -> List[Dict[str, Any]]:
         """
-        Returns a list of Power-Ups (Plugins) data for the given cards.
+        Returns a mapping of Power-Ups (Plugins) data for the given cards.
 
         :param cards: List of the cards to get the Power-Ups for
         :param timeout: Timeout in seconds to wait between API calls
-        :return: List of card Power-Ups (Plugins)
+        :return: Mapping of card Short Links to the Power-Ups (Plugins)
         """
         session = requests.Session()
-        card_powerups = []
+        card_powerups_mapping = {}
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
@@ -106,12 +106,10 @@ class Trello:
                 timeout=timeout,
             )
             response.raise_for_status()
-            card_powerups.append({'id': card['shortLink'],
-                                  'name': card['name'],
-                                  'powerups': response.json()})
-            if len(card_powerups) % 10 == 0:
-                print('Progress:', len(card_powerups))
-        return card_powerups
+            card_powerups_mapping[card['idShort']] = response.json()
+            if len(card_powerups_mapping) % 10 == 0:
+                print('Progress:', len(card_powerups_mapping))
+        return card_powerups_mapping
 
     @staticmethod
     def parse_card_id(card: Dict[str, Any]) -> str:
