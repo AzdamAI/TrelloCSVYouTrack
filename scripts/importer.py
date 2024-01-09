@@ -36,7 +36,9 @@ def main():
         row['summary'] = trello.parse_card_summary(card)
         row['description'] = trello.parse_card_description(card)
         row['due_date'] = trello.parse_card_due(card)
-        row['assignee'] = ''
+        row['assignee'] = trello.parse_card_assignee_username(
+            members_mapping[card['shortLink']]
+        )
         row['state'] = ''
         row['story_points'] = trello.parse_story_points(
             powerups_mapping[card['shortLink']]
