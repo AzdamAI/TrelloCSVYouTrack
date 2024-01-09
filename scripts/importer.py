@@ -21,6 +21,7 @@ def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
     cards = trello.get_board_cards(TRELLO_BOARD_ID)
     actions_mapping = trello.get_cards_actions_bulk(cards)
+    members_mapping = trello.get_cards_members_bulk(cards)
     powerups_mapping = trello.get_cards_powerups_bulk(cards)
 
     board = []

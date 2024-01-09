@@ -85,7 +85,7 @@ class Trello:
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/actions',
-                params={'filter': action_filter, 'limit': action_limit},
+                params={'filter': action_filter, 'limit': action_limit}
             )
             response.raise_for_status()
             actions_mapping[card['shortLink']] = response.json()
@@ -93,15 +93,38 @@ class Trello:
                 print(f'Actions: {len(actions_mapping)}')
         return actions_mapping
 
-    def get_card_members(self,
-                         card_id: str,
-                         fields: List[str] = None) -> List[Dict[str, Any]]:
-        member_fields = ','.join(fields or MEMBER_FIELDS)
+    def get_card_members(
+            self,
+            card_id: str,
+            member_fields: List[str] = None
+    ) -> List[Dict[str, Any]]:
+        member_fields = ','.join(member_fields or MEMBER_FIELDS)
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}/members',
                                 params={'fields': member_fields})
         response.raise_for_status()
         return response.json()
+
+    def get_cards_members_bulk(
+            self,
+            cards: List[Dict[str, Any]],
+            member_fields: List[str] = None
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        session = requests.Session()
+        session.params = {'key': self.api_key, 'token': self.api_token}
+
+        member_fields = ','.join(member_fields or MEMBER_FIELDS)
+        members_mapping = {}
+        for card in cards:
+            response = session.get(
+                url=f'{self.api_base_url}/cards/{card["shortLink"]}/members',
+                params={'fields': member_fields}
+            )
+            response.raise_for_status()
+            members_mapping[card['shortLink']] = response.json()
+            if len(members_mapping) % 10 == 0:
+                print(f'Members: {len(members_mapping)}')
+        return members_mapping
 
     def get_card_powerups(self,
                           card_id: str) -> List[Dict[str, Any]]:
@@ -127,7 +150,7 @@ class Trello:
         powerups_mapping = {}
         for card in cards:
             response = session.get(
-                url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
+                url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData'
             )
             response.raise_for_status()
             powerups_mapping[card['shortLink']] = response.json()
