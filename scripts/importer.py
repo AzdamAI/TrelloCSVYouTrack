@@ -16,6 +16,8 @@ CSV_HEADER = [
     'Assignee (user)', 'State (state)', 'Story Points (integer)'
 ]
 
+RESOLVED_STATE = 'Done'
+
 
 def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
@@ -39,13 +41,11 @@ def main():
         row['assignee'] = trello.parse_card_assignee_username(
             members_mapping[card['shortLink']]
         )
-        row['state'] = ''
+        row['state'] = RESOLVED_STATE
         row['story_points'] = trello.parse_story_points(
             powerups_mapping[card['shortLink']]
         )
         board.append(row)
-
-    # trello.export_board_csv(card_powerups, 'trello-board.csv')
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
                         perm_token=YOUTRACK_PERM_TOKEN)
