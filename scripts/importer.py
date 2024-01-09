@@ -13,8 +13,9 @@ YOUTRACK_PERM_TOKEN = os.getenv('YOUTRACK_PERM_TOKEN')
 
 def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
-    card_powerups = trello.get_board_cards_powerups(TRELLO_BOARD_ID)
-    trello.export_board_story_points(card_powerups, 'export.csv')
+    cards = trello.get_board_cards(TRELLO_BOARD_ID)
+    card_powerups = trello.get_card_powerups(cards)
+    trello.export_board_csv(card_powerups, 'export.csv')
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
                         perm_token=YOUTRACK_PERM_TOKEN)

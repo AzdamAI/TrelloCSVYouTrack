@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 import os
 from typing import List, Dict, Union, Any
 
@@ -75,19 +76,16 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_board_cards_powerups(self,
-                                 board_id: str,
-                                 timeout: int = 1) -> List[Dict[str, Any]]:
+    def get_cards_powerups(self,
+                           cards: List[Dict[str, Any]],
+                           timeout: int = 1) -> List[Dict[str, Any]]:
         """
-        Returns a list of Power-Ups (Plugins) data for all cards
-        on the given board.
+        Returns a list of Power-Ups (Plugins) data for the given cards.
 
-        :param board_id: ID of the board
+        :param cards: List of the cards to get the Power-Ups for
         :param timeout: Timeout in seconds to wait between API calls
-        :return: Mapping of card IDs (Short Links) to card name and Power-Ups
+        :return: List of card Power-Ups (Plugins)
         """
-        cards = self.get_board_cards(board_id)
-
         session = requests.Session()
         card_powerups = []
         for card in cards:
@@ -104,7 +102,7 @@ class Trello:
                 print('Progress:', len(card_powerups))
         return card_powerups
 
-    def export_board_story_points(
+    def export_board_csv(
             self,
             card_powerups: List[Dict[str, Any]],
             csv_path: Union[str, bytes, os.PathLike],
@@ -125,17 +123,18 @@ class Trello:
             # Write the header
             writer.writerow(csv_header)
             # Write the rows beyond the header
-            for card in card_powerups:
-                story_points = self.parse_powerup_points(card['powerups'])
-                writer.writerow([card['name'], story_points])
+            for cp in card_powerups:
+                story_points = self.parse_story_points(cp)
+                writer.writerow([cp['name'], story_points])
 
     @staticmethod
-    def parse_powerup_points(powerups: List[Dict[str, Any]]) -> str:
+    def parse_story_points(card_powerups: Dict[str, Any]) -> str:
         try:
+            powerups = card_powerups['powerups']
             for powerup in powerups:
                 if powerup['idPlugin'] == AGILE_TOOLS_PLUGIN_ID:
                     parsed_points = json.loads(powerup['value'])
                     return str(parsed_points['points'])
         except Exception:
-            pass
+            logging.error(f'Could not parse Story Points: {card_powerups}')
         return ''
