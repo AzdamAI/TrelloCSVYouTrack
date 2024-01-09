@@ -15,7 +15,7 @@ def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
     cards = trello.get_board_cards(TRELLO_BOARD_ID)
     card_powerups = trello.get_card_powerups(cards)
-    trello.export_board_csv(card_powerups, 'export.csv')
+    trello.export_board_csv(card_powerups, 'trello-board.csv')
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
                         perm_token=YOUTRACK_PERM_TOKEN)

@@ -70,7 +70,8 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_card_powerups(self, card_id: str) -> List[Dict[str, Any]]:
+    def get_card_powerups(self,
+                          card_id: str) -> List[Dict[str, Any]]:
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}/pluginData')
         response.raise_for_status()
@@ -102,6 +103,18 @@ class Trello:
                 print('Progress:', len(card_powerups))
         return card_powerups
 
+    @staticmethod
+    def parse_story_points(card_powerups: Dict[str, Any]) -> str:
+        try:
+            powerups = card_powerups['powerups']
+            for powerup in powerups:
+                if powerup['idPlugin'] == AGILE_TOOLS_PLUGIN_ID:
+                    parsed_points = json.loads(powerup['value'])
+                    return str(parsed_points['points'])
+        except Exception:
+            logging.error(f'Could not parse Story Points: {card_powerups}')
+        return ''
+
     def export_board_csv(
             self,
             card_powerups: List[Dict[str, Any]],
@@ -126,15 +139,3 @@ class Trello:
             for cp in card_powerups:
                 story_points = self.parse_story_points(cp)
                 writer.writerow([cp['name'], story_points])
-
-    @staticmethod
-    def parse_story_points(card_powerups: Dict[str, Any]) -> str:
-        try:
-            powerups = card_powerups['powerups']
-            for powerup in powerups:
-                if powerup['idPlugin'] == AGILE_TOOLS_PLUGIN_ID:
-                    parsed_points = json.loads(powerup['value'])
-                    return str(parsed_points['points'])
-        except Exception:
-            logging.error(f'Could not parse Story Points: {card_powerups}')
-        return ''
