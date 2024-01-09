@@ -168,17 +168,16 @@ class Trello:
 
     @staticmethod
     def parse_card_creator_username_and_date(
-            card_actions: List[Dict[str, Any]]
+            actions: List[Dict[str, Any]]
     ) -> Tuple[str, str]:
         try:
-            for card_action in card_actions:
-                if card_action['type'] == ACTION_TYPES['create_card']:
-                    return (card_action['memberCreator']['username'],
-                            card_action['date'])
+            for action in actions:
+                if action['type'] == ACTION_TYPES['create_card']:
+                    return action['memberCreator']['username'], action['date']
             else:
                 raise KeyError()
         except Exception:
-            logging.error(f'Failed to parse the card creator: {card_actions}')
+            logging.error(f'Failed to parse the card creator: {actions}')
         return '', ''
 
     @staticmethod
@@ -203,6 +202,14 @@ class Trello:
             return card['due']
         except Exception:
             logging.error(f'Could not parse Card due date: {card}')
+        return ''
+
+    @staticmethod
+    def parse_card_assignee_username(members: List[Dict[str, Any]]) -> str:
+        try:
+            return members[0]['username']
+        except Exception:
+            logging.error(f'Could not parse Card member: {members}')
         return ''
 
     @staticmethod
