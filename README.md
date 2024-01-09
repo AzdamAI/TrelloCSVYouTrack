@@ -2,7 +2,7 @@
 
 📤 Export Trello Board in CSV for **FREE**
 
-## How to Export
+## How to Export as CSV
 
 ### Notes
 
@@ -12,12 +12,9 @@
   Although it is not a strict requirement to follow the current import
   process.
 
-
-### Detailed import process
+### Detailed CSV export process
 
 * For Trello:
-    * Make sure you have the list of user emails
-      which is going to be used to map users on Jira and YouTrack.
-* Follow
-  YouTrack's [official documentation](https://www.jetbrains.com/help/youtrack/server/new-import-from-jira.html)
-  and:
+    * Make sure you have the list of user emails.
+* For YouTrack:
+    * Follow [the official documentation](https://www.jetbrains.com/help/youtrack/server/new-import-from-jira.html).
