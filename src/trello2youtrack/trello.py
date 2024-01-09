@@ -69,14 +69,38 @@ class Trello:
     def get_card_actions(self,
                          card_id: str,
                          action_types: List[str] = None,
-                         limit: int = 1000) -> List[Dict[str, Any]]:
-        filter = ','.join(action_types or ACTION_TYPES.values())
+                         action_limit: int = 1000) -> List[Dict[str, Any]]:
+        action_filter = ','.join(action_types or ACTION_TYPES.values())
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}/actions',
-                                params={'filter': filter,
-                                        'limit': limit})
+                                params={'filter': action_filter,
+                                        'limit': action_limit})
         response.raise_for_status()
         return response.json()
+
+    def get_cards_actions_bulk(
+            self,
+            cards: List[Dict[str, Any]],
+            action_types: List[str] = None,
+            action_limit: int = 1000,
+            timeout: int = 1
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        action_filter = ','.join(action_types or ACTION_TYPES.values())
+
+        session = requests.Session()
+        actions_mapping = {}
+        for card in cards:
+            response = session.get(
+                url=f'{self.api_base_url}/cards/{card["shortLink"]}/actions',
+                params={'key': self.api_key, 'token': self.api_token,
+                        'filter': action_filter, 'limit': action_limit},
+                timeout=timeout,
+            )
+            response.raise_for_status()
+            actions_mapping[card['shortLink']] = response.json()
+            if len(actions_mapping) % 10 == 0:
+                print(f'Progress: {len(actions_mapping)}')
+        return actions_mapping
 
     def get_card_powerups(self,
                           card_id: str) -> List[Dict[str, Any]]:
@@ -108,7 +132,7 @@ class Trello:
             response.raise_for_status()
             powerups_mapping[card['shortLink']] = response.json()
             if len(powerups_mapping) % 10 == 0:
-                print('Progress:', len(powerups_mapping))
+                print(f'Progress: {len(powerups_mapping)}')
         return powerups_mapping
 
     @staticmethod
