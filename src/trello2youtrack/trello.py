@@ -87,9 +87,11 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_cards_powerups_bulk(self,
-                                cards: List[Dict[str, Any]],
-                                timeout: int = 1) -> List[Dict[str, Any]]:
+    def get_cards_powerups_bulk(
+            self,
+            cards: List[Dict[str, Any]],
+            timeout: int = 1
+    ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Returns a mapping of Power-Ups (Plugins) data for the given cards.
 
@@ -98,7 +100,7 @@ class Trello:
         :return: Mapping of card Short Links to the Power-Ups (Plugins)
         """
         session = requests.Session()
-        card_powerups_mapping = {}
+        powerups_mapping = {}
         for card in cards:
             response = session.get(
                 url=f'{self.api_base_url}/cards/{card["shortLink"]}/pluginData',
@@ -106,10 +108,10 @@ class Trello:
                 timeout=timeout,
             )
             response.raise_for_status()
-            card_powerups_mapping[card['idShort']] = response.json()
-            if len(card_powerups_mapping) % 10 == 0:
-                print('Progress:', len(card_powerups_mapping))
-        return card_powerups_mapping
+            powerups_mapping[card['shortLink']] = response.json()
+            if len(powerups_mapping) % 10 == 0:
+                print('Progress:', len(powerups_mapping))
+        return powerups_mapping
 
     @staticmethod
     def parse_card_id(card: Dict[str, Any]) -> str:
@@ -120,15 +122,14 @@ class Trello:
         return ''
 
     @staticmethod
-    def parse_story_points(card_powerups: Dict[str, Any]) -> str:
+    def parse_story_points(powerups: List[Dict[str, Any]]) -> str:
         try:
-            powerups = card_powerups['powerups']
             for powerup in powerups:
                 if powerup['idPlugin'] == AGILE_TOOLS_PLUGIN_ID:
                     parsed_points = json.loads(powerup['value'])
                     return str(parsed_points['points'])
         except Exception:
-            logging.error(f'Could not parse Story Points: {card_powerups}')
+            logging.error(f'Could not parse Story Points: {powerups}')
         return ''
 
     def export_board_csv(

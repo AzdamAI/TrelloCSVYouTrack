@@ -20,12 +20,11 @@ CSV_HEADER = [
 def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
     cards = trello.get_board_cards(TRELLO_BOARD_ID)
-    card_powerups_mapping = trello.get_cards_powerups_bulk(cards)
+    powerups_mapping = trello.get_cards_powerups_bulk(cards)
 
     board = []
-    row = {}
     for card in cards:
-        row.clear()
+        row = {}
         row['id'] = trello.parse_card_id(card)
         row['author'] = ''
         row['created'] = ''
@@ -34,7 +33,9 @@ def main():
         row['due_date'] = ''
         row['assignee'] = ''
         row['state'] = ''
-        row['story_points'] = ''
+        row['story_points'] = trello.parse_story_points(
+            powerups_mapping[card['shortLink']]
+        )
         board.append(row)
 
     # trello.export_board_csv(card_powerups, 'trello-board.csv')
