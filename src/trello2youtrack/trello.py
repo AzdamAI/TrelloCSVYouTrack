@@ -174,6 +174,14 @@ class Trello:
         return ''
 
     @staticmethod
+    def parse_card_due(card: Dict[str, Any]) -> str:
+        try:
+            return card['due']
+        except Exception:
+            logging.error(f'Could not parse Card due date: {card}')
+        return ''
+
+    @staticmethod
     def parse_story_points(powerups: List[Dict[str, Any]]) -> str:
         try:
             for powerup in powerups:

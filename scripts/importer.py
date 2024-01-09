@@ -34,7 +34,7 @@ def main():
         row['created'] = created
         row['summary'] = trello.parse_card_summary(card)
         row['description'] = trello.parse_card_description(card)
-        row['due_date'] = ''
+        row['due_date'] = trello.parse_card_due(card)
         row['assignee'] = ''
         row['state'] = ''
         row['story_points'] = trello.parse_story_points(
