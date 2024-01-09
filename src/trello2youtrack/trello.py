@@ -91,6 +91,7 @@ class Trello:
             actions_mapping[card['shortLink']] = response.json()
             if len(actions_mapping) % 10 == 0:
                 print(f'Actions: {len(actions_mapping)}')
+        print('Finished retrieving cards actions\n')
         return actions_mapping
 
     def get_card_members(
@@ -124,6 +125,7 @@ class Trello:
             members_mapping[card['shortLink']] = response.json()
             if len(members_mapping) % 10 == 0:
                 print(f'Members: {len(members_mapping)}')
+        print('Finished retrieving cards members\n')
         return members_mapping
 
     def get_card_powerups(self,
@@ -156,6 +158,7 @@ class Trello:
             powerups_mapping[card['shortLink']] = response.json()
             if len(powerups_mapping) % 10 == 0:
                 print(f'Power-Ups: {len(powerups_mapping)}')
+        print('Finished retrieving cards Power-Ups\n')
         return powerups_mapping
 
     @staticmethod
