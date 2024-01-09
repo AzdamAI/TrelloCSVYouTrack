@@ -158,6 +158,14 @@ class Trello:
         return '', ''
 
     @staticmethod
+    def parse_card_summary(card: Dict[str, Any]) -> str:
+        try:
+            return card['name']
+        except Exception:
+            logging.error(f'Could not parse Card summary: {card}')
+        return ''
+
+    @staticmethod
     def parse_story_points(powerups: List[Dict[str, Any]]) -> str:
         try:
             for powerup in powerups:
