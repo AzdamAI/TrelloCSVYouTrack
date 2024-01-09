@@ -33,7 +33,7 @@ def main():
         row['author'] = author
         row['created'] = created
         row['summary'] = trello.parse_card_summary(card)
-        row['description'] = ''
+        row['description'] = trello.parse_card_description(card)
         row['due_date'] = ''
         row['assignee'] = ''
         row['state'] = ''
