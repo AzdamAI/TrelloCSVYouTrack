@@ -54,6 +54,7 @@ class YouTrack:
         Returns a list of top `count` Issues.
 
         :param count: Number of Issues to be retrieved
+        :param fields: Comma-separated list of fields to return
         :return: List of Issues
         """
         fields = fields or ISSUE_FIELDS
