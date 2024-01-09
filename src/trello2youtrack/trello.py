@@ -57,6 +57,15 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
+    def get_card_members(self,
+                         card_id: str,
+                         fields: str = 'all') -> List[Dict[str, Any]]:
+        response = self.request(method='GET',
+                                url=f'/cards/{card_id}/members',
+                                params={'fields': fields})
+        response.raise_for_status()
+        return response.json()
+
     def get_card_actions(self,
                          card_id: str,
                          action_types: List[str] = None,
@@ -69,7 +78,7 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_card_creator_username(self, card: Dict[str, Any]) -> str:
+    def parse_card_creator_username(self, card: Dict[str, Any]) -> str:
         create_card_actions = self.get_card_actions(
             card_id=card['shortLink'],
             action_types=[ACTION_TYPES['create_card']],
