@@ -104,6 +104,14 @@ class Trello:
         return card_powerups
 
     @staticmethod
+    def parse_card_id(card: Dict[str, Any]) -> str:
+        try:
+            return card['idShort']
+        except Exception:
+            logging.error(f'Could not parse Card ID: {card}')
+        return ''
+
+    @staticmethod
     def parse_story_points(card_powerups: Dict[str, Any]) -> str:
         try:
             powerups = card_powerups['powerups']
