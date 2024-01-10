@@ -13,7 +13,7 @@ YOUTRACK_PERM_TOKEN = os.getenv('YOUTRACK_PERM_TOKEN')
 
 CSV_HEADER = [
     'ID', 'Author', 'Created', 'Summary', 'Description', 'Due Date',
-    'Assignee (user)', 'State (state)', 'Story Points (integer)'
+    'Assignee (user)', 'State (state)', 'Story points (integer)'
 ]
 
 RESOLVED_STATE = 'Done'
@@ -46,7 +46,7 @@ def main():
             row['Assignee (user)'] = assignee
             # Consider all the Cards in the past as Done
             row['State (state)'] = RESOLVED_STATE
-            row['Story Points (integer)'] = trello.parse_story_points(
+            row['Story points (integer)'] = trello.parse_story_points(
                 powerups_mapping[card_id]
             )
             board.append(row)
