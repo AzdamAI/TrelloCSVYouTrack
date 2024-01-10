@@ -50,6 +50,7 @@ def main():
                 powerups_mapping[card_id]
             )
             board.append(row)
+    board = trello.sort_board(board)
     trello.export_board_csv(board, 'trello-board.csv', CSV_HEADER)
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
