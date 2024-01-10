@@ -167,7 +167,7 @@ class Trello:
         try:
             if assignee_index:
                 return f'{card["idShort"]}-{assignee_index}'
-            return card["idShort"]
+            return str(card["idShort"])
         except Exception:
             logging.error(f'Failed to parse Card number: {card}')
         return ''
@@ -232,6 +232,10 @@ class Trello:
         except Exception:
             logging.error(f'Failed to parse Story Points: {powerups}')
         return ''
+
+    @staticmethod
+    def sort_board(board: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        return sorted(board, key=lambda row: row['ID'], reverse=False)
 
     def export_board_csv(self,
                          board: List[Dict[str, Any]],
