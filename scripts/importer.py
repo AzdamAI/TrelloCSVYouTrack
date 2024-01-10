@@ -18,9 +18,14 @@ CSV_HEADER = [
 
 RESOLVED_STATE = 'Done'
 
+USERS_CSV_PATH = 'assets/users.csv'
+EXPORT_CSV_PATH = 'assets/trello-board.csv'
+
 
 def main():
     trello = Trello(api_key=TRELLO_API_KEY, api_token=TRELLO_API_TOKEN)
+    users_mapping = trello.read_users_mapping(USERS_CSV_PATH)
+
     cards = trello.get_board_cards(TRELLO_BOARD_ID)
     actions_mapping = trello.get_cards_actions_bulk(cards)
     members_mapping = trello.get_cards_members_bulk(cards)
@@ -38,12 +43,12 @@ def main():
             row['ID'] = trello.parse_card_number(card, i)
             (row['Author'],
              row['Created']) = trello.parse_card_creator_username_and_date(
-                actions_mapping[card_id]
+                actions_mapping[card_id], users_mapping
             )
             row['Summary'] = trello.parse_card_summary(card)
             row['Description'] = trello.parse_card_description(card)
             row['Due Date'] = trello.parse_card_due(card)
-            row['Assignee (user)'] = assignee
+            row['Assignee (user)'] = users_mapping.get(assignee, '')
             # Consider all the Cards in the past as Done
             row['State (state)'] = RESOLVED_STATE
             row['Story points (integer)'] = trello.parse_story_points(
@@ -51,7 +56,7 @@ def main():
             )
             board.append(row)
     board = trello.sort_board(board)
-    trello.export_board_csv(board, 'trello-board.csv', CSV_HEADER)
+    trello.export_board_csv(board, EXPORT_CSV_PATH, CSV_HEADER)
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
                         perm_token=YOUTRACK_PERM_TOKEN)
