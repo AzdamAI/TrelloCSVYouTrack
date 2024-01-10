@@ -162,12 +162,9 @@ class Trello:
         return powerups_mapping
 
     @staticmethod
-    def parse_card_number(card: Dict[str, Any],
-                          assignee_index: int = None) -> str:
+    def parse_card_number(card: Dict[str, Any], assignee_index: int) -> str:
         try:
-            if assignee_index:
-                return f'{card["idShort"]}-{assignee_index}'
-            return str(card["idShort"])
+            return f'{card["idShort"]}-{assignee_index}'
         except Exception:
             logging.error(f'Failed to parse Card number: {card}')
         return ''
@@ -235,7 +232,9 @@ class Trello:
 
     @staticmethod
     def sort_board(board: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        return sorted(board, key=lambda row: row['ID'], reverse=False)
+        return sorted(board,
+                      key=lambda row: int(row['ID'].split('-')[0]),
+                      reverse=False)
 
     def export_board_csv(self,
                          board: List[Dict[str, Any]],
