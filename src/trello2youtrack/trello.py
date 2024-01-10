@@ -162,11 +162,14 @@ class Trello:
         return powerups_mapping
 
     @staticmethod
-    def parse_card_id(card: Dict[str, Any]) -> str:
+    def parse_card_number(card: Dict[str, Any],
+                          assignee_index: int = None) -> str:
         try:
-            return card['idShort']
+            if assignee_index:
+                return f'{card["idShort"]}-{assignee_index}'
+            return card["idShort"]
         except Exception:
-            logging.error(f'Failed to parse Card ID: {card}')
+            logging.error(f'Failed to parse Card number: {card}')
         return ''
 
     @staticmethod
@@ -208,14 +211,16 @@ class Trello:
         return ''
 
     @staticmethod
-    def parse_card_assignee_username(members: List[Dict[str, Any]]) -> str:
+    def parse_card_assignees_username(
+            members: List[Dict[str, Any]]
+    ) -> List[str]:
         if not members:
-            return ''
+            return []
         try:
-            return members[0]['username']
+            return [member['username'] for member in members]
         except Exception:
             logging.error(f'Failed to parse Card assignee: {members}')
-        return ''
+        return []
 
     @staticmethod
     def parse_story_points(powerups: List[Dict[str, Any]]) -> str:
