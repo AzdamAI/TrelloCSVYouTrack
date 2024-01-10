@@ -17,4 +17,5 @@
 * For Trello:
     * Make sure you have the list of user emails.
 * For YouTrack:
+    * Create a fresh Project (with type Scrum)
     * Follow [the official documentation](https://www.jetbrains.com/help/youtrack/server/new-import-from-jira.html).
