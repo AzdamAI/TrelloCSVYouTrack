@@ -28,24 +28,28 @@ def main():
 
     board = []
     for card in cards:
-        row = {}
-        row['ID'] = trello.parse_card_id(card)
-        author, created = trello.parse_card_creator_username_and_date(
-            actions_mapping[card['shortLink']]
+        card_id = card['shortLink']
+        assignees = trello.parse_card_assignees_username(
+            members_mapping[card_id]
         )
-        row['Author'] = author
-        row['Created'] = created
-        row['Summary'] = trello.parse_card_summary(card)
-        row['Description'] = trello.parse_card_description(card)
-        row['Due Date'] = trello.parse_card_due(card)
-        row['Assignee (user)'] = trello.parse_card_assignee_username(
-            members_mapping[card['shortLink']]
-        )
-        row['State (state)'] = RESOLVED_STATE
-        row['Story Points (integer)'] = trello.parse_story_points(
-            powerups_mapping[card['shortLink']]
-        )
-        board.append(row)
+        # Duplicate row per Card Members with the same info but the assignee
+        for i, assignee in enumerate(assignees):
+            row = {}
+            row['ID'] = trello.parse_card_number(card, i)
+            (row['Author'],
+             row['Created']) = trello.parse_card_creator_username_and_date(
+                actions_mapping[card_id]
+            )
+            row['Summary'] = trello.parse_card_summary(card)
+            row['Description'] = trello.parse_card_description(card)
+            row['Due Date'] = trello.parse_card_due(card)
+            row['Assignee (user)'] = assignee
+            # Consider all the Cards in the past as Done
+            row['State (state)'] = RESOLVED_STATE
+            row['Story Points (integer)'] = trello.parse_story_points(
+                powerups_mapping[card_id]
+            )
+            board.append(row)
     trello.export_board_csv(board, 'trello-board.csv', CSV_HEADER)
 
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
