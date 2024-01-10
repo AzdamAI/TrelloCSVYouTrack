@@ -58,6 +58,7 @@ class Trello:
             next(csv_reader)
             for row in csv_reader:
                 users_mapping[row[0]] = row[1]
+        return users_mapping
 
     def get_board_cards(self, board_id: str) -> List[Dict[str, Any]]:
         response = self.request(method='GET',
