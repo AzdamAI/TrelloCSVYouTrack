@@ -47,6 +47,18 @@ class Trello:
                                 f'{self.api_base_url}{url}',
                                 **kwargs)
 
+    @staticmethod
+    def read_users_mapping(
+            csv_path: Union[str, bytes, os.PathLike]
+    ) -> Dict[str, str]:
+        users_mapping = {}
+        with open(csv_path, 'r') as file_handle:
+            csv_reader = csv.reader(file_handle)
+            # Skip the header
+            next(csv_reader)
+            for row in csv_reader:
+                users_mapping[row[0]] = row[1]
+
     def get_board_cards(self, board_id: str) -> List[Dict[str, Any]]:
         response = self.request(method='GET',
                                 url=f'/boards/{board_id}/cards')
@@ -171,12 +183,15 @@ class Trello:
 
     @staticmethod
     def parse_card_creator_username_and_date(
-            actions: List[Dict[str, Any]]
+            actions: List[Dict[str, Any]],
+            users_mapping: Dict[str, str],
     ) -> Tuple[str, str]:
         try:
             for action in actions:
                 if action['type'] == ACTION_TYPES['create_card']:
-                    return action['memberCreator']['username'], action['date']
+                    trello_username = action['memberCreator']['username']
+                    youtrack_username = users_mapping.get(trello_username, '')
+                    return youtrack_username, action['date']
             else:
                 raise KeyError()
         except Exception:
@@ -249,10 +264,10 @@ class Trello:
         :return:
         """
         with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=csv_header)
+            csv_writer = csv.DictWriter(file, fieldnames=csv_header)
             # Write the header
-            writer.writeheader()
+            csv_writer.writeheader()
             # Write the rows beyond the header
             for row in board:
-                writer.writerow(row)
+                csv_writer.writerow(row)
         print(f'Successfully exported {len(board)} rows!')
