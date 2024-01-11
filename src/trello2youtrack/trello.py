@@ -14,6 +14,8 @@ ACTION_TYPES = {
     'comment_card': 'commentCard',
 }
 
+LIST_FIELDS = ['all']
+
 MEMBER_FIELDS = ['all']
 
 # Story Points Power-Up (plugin) free:
@@ -69,6 +71,15 @@ class Trello:
     def get_card(self, card_id: str) -> Dict[str, Any]:
         response = self.request(method='GET',
                                 url=f'/cards/{card_id}')
+        response.raise_for_status()
+        return response.json()
+
+    def get_card_list(self, card_id: str,
+                      list_fields: List[str] = None) -> Dict[str, Any]:
+        list_fields = ','.join(list_fields or LIST_FIELDS)
+        response = self.request(method='GET',
+                                url=f'/cards/{card_id}/list',
+                                params={'fields': list_fields})
         response.raise_for_status()
         return response.json()
 
