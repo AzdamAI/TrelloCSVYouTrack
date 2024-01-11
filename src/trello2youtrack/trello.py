@@ -250,6 +250,14 @@ class Trello:
         return ''
 
     @staticmethod
+    def parse_card_list(list_: Dict[str, Any]) -> str:
+        try:
+            return list_['name']
+        except Exception:
+            logging.error(f'Failed to parse Card list: {list_}')
+        return ''
+
+    @staticmethod
     def parse_card_due(card: Dict[str, Any]) -> str:
         try:
             return card['due']
