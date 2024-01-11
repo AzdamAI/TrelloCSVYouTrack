@@ -74,7 +74,8 @@ class Trello:
         response.raise_for_status()
         return response.json()
 
-    def get_card_list(self, card_id: str,
+    def get_card_list(self,
+                      card_id: str,
                       list_fields: List[str] = None) -> Dict[str, Any]:
         list_fields = ','.join(list_fields or LIST_FIELDS)
         response = self.request(method='GET',
@@ -82,6 +83,28 @@ class Trello:
                                 params={'fields': list_fields})
         response.raise_for_status()
         return response.json()
+
+    def get_card_list_bulk(
+            self,
+            cards: List[Dict[str, Any]],
+            list_fields: List[str] = None
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        session = requests.Session()
+        session.params = {'key': self.api_key, 'token': self.api_token}
+
+        list_fields = ','.join(list_fields or LIST_FIELDS)
+        list_mapping = {}
+        for card in cards:
+            response = session.get(
+                url=f'{self.api_base_url}/cards/{card["shortLink"]}/list',
+                params={'fields': list_fields}
+            )
+            response.raise_for_status()
+            list_mapping[card['shortLink']] = response.json()
+            if len(list_mapping) % 10 == 0:
+                print(f'List {len(list_mapping)}')
+        print('Finished retrieving Cards list\n')
+        return list_mapping
 
     def get_card_actions(self,
                          card_id: str,
