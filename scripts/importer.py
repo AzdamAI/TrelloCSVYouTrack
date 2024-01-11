@@ -12,7 +12,8 @@ YOUTRACK_API_BASE_URL = os.getenv('YOUTRACK_API_BASE_URL')
 YOUTRACK_PERM_TOKEN = os.getenv('YOUTRACK_PERM_TOKEN')
 
 CSV_HEADER = [
-    'ID', 'Author', 'Created', 'Summary', 'Description', 'Due Date (date)',
+    'ID', 'Author', 'Created', 'Summary', 'Description',
+    # 'Due Date (date)',
     'Assignee (user)', 'State (state)', 'Story points (integer)'
 ]
 
@@ -47,7 +48,7 @@ def main():
             )
             row['Summary'] = trello.parse_card_summary(card)
             row['Description'] = trello.parse_card_description(card)
-            row['Due Date (date)'] = trello.parse_card_due(card)
+            # row['Due Date (date)'] = trello.parse_card_due(card)
             row['Assignee (user)'] = users_mapping.get(assignee, '')
             # Consider all the Cards in the past as Done
             row['State (state)'] = RESOLVED_STATE
