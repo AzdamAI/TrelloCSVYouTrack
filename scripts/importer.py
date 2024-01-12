@@ -13,8 +13,8 @@ YOUTRACK_PERM_TOKEN = os.getenv('YOUTRACK_PERM_TOKEN')
 
 CSV_HEADER = [
     'ID', 'Author', 'Created', 'Summary', 'Description',
-    'Due Date (date)',
-    'Assignee (user)', 'State (state)', 'Story points (integer)'
+    'State (state)', 'Sprint (version)', 'Story Points (integer)',
+    'Assignee (user)', 'Due Date (date)',
 ]
 
 RESOLVED_STATE = 'Done'
@@ -28,6 +28,7 @@ def main():
     users_mapping = trello.read_users_mapping(USERS_CSV_PATH)
 
     cards = trello.get_board_cards(TRELLO_BOARD_ID)
+    list_mapping = trello.get_card_list_bulk(cards)
     actions_mapping = trello.get_cards_actions_bulk(cards)
     members_mapping = trello.get_cards_members_bulk(cards)
     powerups_mapping = trello.get_cards_powerups_bulk(cards)
@@ -48,13 +49,16 @@ def main():
             )
             row['Summary'] = trello.parse_card_summary(card)
             row['Description'] = trello.parse_card_description(card)
-            row['Due Date (date)'] = trello.parse_card_due(card)
-            row['Assignee (user)'] = users_mapping.get(assignee, '')
-            # Consider all the Cards in the past as Done
-            row['State (state)'] = RESOLVED_STATE
+            row['State (state)'] = RESOLVED_STATE  # Consider past Cards Done
+            row['Sprint (version)'] = trello.parse_card_list(
+                list_mapping[card_id]
+            )
             row['Story Points (integer)'] = trello.parse_story_points(
                 powerups_mapping[card_id]
             )
+            row['Assignee (user)'] = users_mapping.get(assignee, '')
+            row['Due Date (date)'] = trello.parse_card_due(card)
+
             board.append(row)
     board = trello.sort_board(board)
     trello.export_board_csv(board, EXPORT_CSV_PATH, CSV_HEADER)
