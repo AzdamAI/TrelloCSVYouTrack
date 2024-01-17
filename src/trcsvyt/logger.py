@@ -5,7 +5,7 @@ from contextlib import ContextDecorator
 
 
 def create_log_file_path(file_path,
-                         # root_dir='trello2youtrack',
+                         # root_dir='trcsvyt',
                          log_dir='log'):
     path_parts = list(pathlib.Path(file_path).parts)
     # relative_path_parts = path_parts[path_parts.index(root_dir) + 1:]
