@@ -1,4 +1,4 @@
-## TrelloCSV
+## TrelloCSVYouTrack
 
 📤 Export Trello Board in CSV for **FREE** [and optionally] Import to YouTrack.
 
