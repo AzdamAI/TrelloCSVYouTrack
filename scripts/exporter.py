@@ -1,7 +1,7 @@
 import os
 
-from src.trello2youtrack.logger import Logger
-from src.trello2youtrack.trello import Trello
+from src.trcsvyt.logger import Logger
+from src.trcsvyt.trello import Trello
 
 TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
 TRELLO_API_TOKEN = os.getenv('TRELLO_API_TOKEN')

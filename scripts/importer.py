@@ -1,7 +1,7 @@
 import os
 
-from src.trello2youtrack.logger import Logger
-from src.trello2youtrack.youtrack import YouTrack
+from src.trcsvyt.logger import Logger
+from src.trcsvyt.youtrack import YouTrack
 
 YOUTRACK_API_BASE_URL = os.getenv('YOUTRACK_API_BASE_URL')
 YOUTRACK_PERM_TOKEN = os.getenv('YOUTRACK_PERM_TOKEN')
