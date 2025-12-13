@@ -34,7 +34,7 @@ def export_trello():
         card_id = card['shortLink']
         assignees = trello.parse_card_assignees_username(
             members_mapping[card_id]
-        )
+        ) or ['']
         # Duplicate row per Card Members with the same info but the assignee
         for i, assignee in enumerate(assignees):
             row = {}
