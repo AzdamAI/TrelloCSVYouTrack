@@ -1,0 +1,18 @@
+[project]
+name = "trellocsvyoutrack"
+version = "0.1.0"
+description = "Export Trello board data to CSV and (optionally) import into YouTrack."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "SHi-ON", email = "shawn@azdam.com" }]
+dependencies = [
+    "requests>=2.31",
+]
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
