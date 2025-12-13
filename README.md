@@ -5,7 +5,11 @@
 ### Quickstart
 You can run the desired script at the `scripts/` dir:
  * `scripts/exporter.py` to export a Trello board in CSV.
- * `scripts/importer.py` [stub] to import or update YouTrack Issues.
+ * `scripts/importer.py` (**not implemented yet**; will raise `NotImplementedError`).
+
+### Setup
+- Copy `assets/users.csv.example` to `assets/users.csv` and replace sample rows with your Trello-to-YouTrack user mapping (header: `TrelloUsername,YouTrackUsername`).
+- Source `settings.sh` from the repo root to load env vars and ensure the `assets/` directory exists.
 
 
 ### Notes

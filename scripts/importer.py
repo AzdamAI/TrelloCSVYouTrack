@@ -11,7 +11,10 @@ def import_youtrack():
     youtrack = YouTrack(api_base_url=YOUTRACK_API_BASE_URL,
                         perm_token=YOUTRACK_PERM_TOKEN)
 
-    raise NotImplementedError('Implement your import into YouTrack script.')
+    raise NotImplementedError(
+        'CSV -> YouTrack import is not implemented yet. '
+        'Build your mapping and creation/updating logic here.'
+    )
 
 
 if __name__ == '__main__':
