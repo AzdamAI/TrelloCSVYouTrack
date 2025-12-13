@@ -7,11 +7,8 @@ from contextlib import ContextDecorator
 def create_log_file_path(file_path,
                          # root_dir='trcsvyt',
                          log_dir='log'):
-    path_parts = list(pathlib.Path(file_path).parts)
-    # relative_path_parts = path_parts[path_parts.index(root_dir) + 1:]
-    # log_file_path = pathlib.Path(log_dir, *relative_path_parts)
-    log_file_path = pathlib.Path(log_dir, *path_parts)
-    log_file_path = log_file_path.with_suffix('.log')
+    path = pathlib.Path(file_path)
+    log_file_path = pathlib.Path(log_dir, path.stem).with_suffix('.log')
     # Create the directories and the file itself
     log_file_path.parent.mkdir(parents=True, exist_ok=True)
     log_file_path.touch(exist_ok=True)
@@ -102,8 +99,9 @@ class Logger(ContextDecorator):
     def __enter__(self):
         sys.stdout = StandardOutput(self.stdout_, self.file_)
         sys.stderr = StandardError(self.stderr_, self.file_)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout = self.stdout_
         sys.stderr = self.stderr_
-        # self.file_.close()  # Leave closing unhandled intentionally
+        self.file_.close()
