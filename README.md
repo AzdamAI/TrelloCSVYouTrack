@@ -10,6 +10,8 @@ You can run the desired script at the `scripts/` dir:
 ### Setup
 - Copy `assets/users.csv.example` to `assets/users.csv` and replace sample rows with your Trello-to-YouTrack user mapping (header: `TrelloUsername,YouTrackUsername`).
 - Source `settings.sh` from the repo root to load env vars and ensure the `assets/` directory exists.
+- Install deps with uv: `uv sync`
+- Run exporter: `uv run python scripts/exporter.py`
 
 
 ### Notes
@@ -47,4 +49,8 @@ You can run the desired script at the `scripts/` dir:
     - [OPTIONAL] set **Type** of `Story points` to `integer`
     - [OPTIONAL] set **Type** of `Assignee` to `Single value`
 
-  
+#### Importer stub (roadmap)
+- Intended input: the CSV produced by `scripts/exporter.py` (`assets/trello-board.csv`), plus the user mapping from `assets/users.csv`.
+- Intended behavior: create new YouTrack issues (or update existing ones by ID) populating Summary, Description, State, Sprint, Story Points, Assignee(s), Due Date, and preserving Created/Author where possible via YouTrack fields.
+- Environment: uses `YOUTRACK_API_BASE_URL` and `YOUTRACK_PERM_TOKEN` loaded via `settings.sh`.
+- Implementation is still missing in `scripts/importer.py`; add field mapping and issue create/update logic when ready.
